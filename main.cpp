@@ -13,7 +13,7 @@ struct BankAccount {
 	double balance = 0.0;
 };
 
-void login(BankAccount& accountDB);
+int login(BankAccount& accountDB);
 
 int main() {
 	// Variable initialization
@@ -57,38 +57,88 @@ int main() {
 
 }
 
-void login(BankAccount& accountDB) {
+int login(std::vector <BankAccount>& accountDB) {
+	if (accountDB.empty()) {
+		std::cout << "No Account Available !!!!!....\n";
+		std::cout << "Returning to Main Menu......\n";
+		std::system("pause");
+		return -1;
+	}
 	//Variable initialization
 	BankAccount tempAccount;
+	int matchedIndex = -1;
 	//Variable initaialization End
-	std::system("cls");
-	std::cout << "--------------------LOGIN--------------------\n\n";
-	std::cout << "=============================\n";
-	std::cout << "Enter User Name: "; 
-	while (true){
-		bool IsValidString = true;
-		std::getline(std::cin >> std::ws, tempAccount.userName);
-		for (int i = 0; i < tempAccount.userName.length(); i++) {
-			if ((!isalpha(tempAccount.userName[i])) && (!isspace(tempAccount.userName[i]))) {
-				IsValidString = false;
+	for (int attempt = 0; attempt < 3; attempt++) {
+		std::system("cls");
+		std::cout << "--------------------LOGIN--------------------\n\n";
+		std::cout << "=============================\n";
+		std::cout << "Enter User Name: ";
+		while (true) {
+			bool IsValidString = true;
+			std::getline(std::cin >> std::ws, tempAccount.userName);
+			for (int i = 0; i < tempAccount.userName.length(); i++) {
+				if ((!isalpha(tempAccount.userName[i])) && (!isspace(tempAccount.userName[i]))) {
+					IsValidString = false;
+					break;
+				}
+			}
+
+			if (IsValidString) {
+				break;
+			}
+			else {
+				std::cout << "Enter a valid user name!!!: ";
+			}
+		}
+
+		std::cout << "Enter 4 digit Pin Code: ";
+		while (true) {
+			bool isValidDigit = true;
+			std::getline(std::cin >> std::ws, tempAccount.pin);
+			for (int i = 0; i < tempAccount.pin.length(); i++) {
+				if ((!isdigit(tempAccount.pin[i]))) {
+					isValidDigit = false;
+					break;
+				}
+			}
+
+			if (isValidDigit && tempAccount.pin.length() == 4) {
+				break;
+			}
+			else {
+				std::cout << "Enter a valid Pin: ";
+			}
+		}
+
+		bool loginSuccessful = false;
+		BankAccount loggedInAccount;
+		for (int i = 0; i < accountDB.size(); i++) {
+			if (tempAccount.userName == accountDB[i].userName && tempAccount.pin == accountDB[i].pin) {
+				loginSuccessful = true;
+				loggedInAccount = accountDB[i];
+				matchedIndex = i;
 				break;
 			}
 		}
 
-		if (IsValidString) {
-			break;
+		if (loginSuccessful) {
+			std::cout << "---------------Login Successful!!!!--------------------\n";
+			std::cout << "Welcome, " << loggedInAccount.userName;
+			return matchedIndex;
 		}
 		else {
-			std::cout << "Enter a valid user name!!!: ";
+			std::cout << "Incorrect Username / Password!!!... Try again!!!";
+			if (attempt < 2) {
+				std::system("pause");
+			}
 		}
+		std::cout << "=============================\n";
 	}
-
-	std::cout << "Enter 4 digit Pin Code: ";
-	while (true) {
-		std::getline(std::cin >> std::ws, tempAccount.pin);
-		for (int i = 0; i < tempAccount.pin.length(); i++) {
-		
-		}
-	}
-	std::cout << "=============================\n";
+	std::system("cls");
+	std::cout << "===================================\n";
+	std::cout << "Too many attempts.... Login Failed!!!\n";
+	std::cout << "Returning to Main Menu....\n";
+	std::cout << "===================================\n";
+	std::system("pause");
+	return -1;
 }
