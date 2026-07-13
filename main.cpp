@@ -13,7 +13,8 @@ struct BankAccount {
 	double balance = 0.0;
 };
 
-int login(BankAccount& accountDB);
+int login(std::vector <BankAccount>& accountDB);
+void createAccount(std::vector <BankAccount>& accountDB);
 
 int main() {
 	// Variable initialization
@@ -46,12 +47,15 @@ int main() {
 	}
 
 	switch (option) {
-		case 1: 
-			break;
-		case 2:
-			break;
-		default:
-			break;
+	case 1: {
+		break;
+		}
+	case 2: {
+		break;
+	}
+	default: {
+		break;
+		}
 	}
 
 
@@ -141,4 +145,159 @@ int login(std::vector <BankAccount>& accountDB) {
 	std::cout << "===================================\n";
 	std::system("pause");
 	return -1;
+}
+
+void createAccount(std::vector <BankAccount>& accountDB) {
+	//Variable initialization
+	BankAccount tempAccount;
+	//Variable initialization end
+
+	std::cout << "--------------Create An Account----------------\n\n";
+	std::cout << "Enter User Name: ";
+	
+	while (true) {
+		bool IsValidString = true;
+		std::getline(std::cin >> std::ws, tempAccount.userName);
+		for (int i = 0; i < tempAccount.userName.length(); i++) {
+			if ((!isalpha(tempAccount.userName[i])) && (!isspace(tempAccount.userName[i]))) {
+				IsValidString = false;
+				break;
+			}
+		}
+
+		if (IsValidString) {
+			break;
+		}
+		else {
+			std::cout << "Enter a valid user name!!!: ";
+		}
+	}
+
+	std::cout << "Enter Date of Birth (DD/MM/YYYY): ";
+
+	while (true) {
+		bool isValidFormat = true;
+		std::getline(std::cin >> std::ws, tempAccount.DoB);
+
+		if (tempAccount.DoB.length() != 10) {
+			isValidFormat = false;
+		}
+		else {
+			for (int i = 0; i < 10; i++) {
+				if (i == 2 || i == 5) {
+					if (tempAccount.DoB[i] != '/') {
+						isValidFormat = false;
+						break;
+					}
+				}
+				else {
+					if (!isdigit(tempAccount.DoB[i])) {
+						isValidFormat = false;
+						break;
+					}
+				}
+			}
+		}
+
+		if (isValidFormat) {
+			break;
+		}
+		else {
+			std::cout << "Invalid format... Enter Date of Birth as (DD/MM/YYYY): ";
+		}
+
+	}
+
+	while (true) {
+		std::cout << "Enter Pin: ";
+
+		while (true) {
+			bool isValidDigit = true;
+			std::getline(std::cin >> std::ws, tempAccount.pin);
+			for (int i = 0; i < tempAccount.pin.length(); i++) {
+				if ((!isdigit(tempAccount.pin[i]))) {
+					isValidDigit = false;
+					break;
+				}
+			}
+
+			if (isValidDigit && tempAccount.pin.length() == 4) {
+				break;
+			}
+			else {
+				std::cout << "Enter a valid Pin: ";
+			}
+		}
+
+		std::cout << "Re-Enter Pin: ";
+		std::string temporalPin;
+		while (true) {
+			bool isValidDigit = true;
+			std::getline(std::cin >> std::ws, temporalPin);
+			for (int i = 0; i < temporalPin.length(); i++) {
+				if ((!isdigit(temporalPin[i]))) {
+					isValidDigit = false;
+					break;
+				}
+			}
+
+			if (isValidDigit && temporalPin.length() == 4) {
+				break;
+			}
+			else {
+				std::cout << "Enter a valid Pin: ";
+			}
+		}
+
+		if (temporalPin == tempAccount.pin) {
+			break;
+		}
+		else {
+			std::cout << "The Pin you entered does not match... Try Again\n\n";
+		}
+	}
+
+	std::cout << "Enter ID (GHA-****-****-*): ";
+
+	while (true) {
+		bool isValidFormat = true;
+		std::getline(std::cin >> std::ws, tempAccount.ID);
+
+		if (tempAccount.ID.length() != 15) {
+			isValidFormat = false;
+		}
+		else {
+			for (int i = 0; i < 15; i++) {
+				if (i == 0 && tempAccount.ID[i] != 'G') {
+					isValidFormat = false;
+					break;
+				}
+				else if (i == 1 && tempAccount.ID[i] != 'H'	) {
+					isValidFormat = false;
+					break;
+				}
+				else if (i == 2 && tempAccount.ID[i] != 'A') {
+					isValidFormat = false;
+					break;
+				}
+				else if (i == 3 || i == 8 || i == 13) {
+					if (tempAccount.ID[i] != '-') {
+						isValidFormat = false;
+						break;
+					}
+				}
+				else if (!isdigit(tempAccount.ID[i])) {
+					isValidFormat = false;
+					break;
+				}
+			}
+		}
+		if (isValidFormat) {
+			break;
+		}
+		else {
+			std::cout << "Invalid Format.... Try Again!! (GHA-****-****-*)\n\n";
+		}
+	}
+
 }
