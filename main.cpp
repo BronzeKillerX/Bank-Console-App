@@ -12,6 +12,7 @@ struct BankAccount {
 	std::string DoB;
 	double balance = 0.0;
 };
+void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void checkBalance(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void withdrawal(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
@@ -24,7 +25,7 @@ int main() {
 	// Variable initialization
 	std::vector <BankAccount> accountDB;
 	loadDatabase(accountDB);
-	int option; //Variable for selecting an option.
+	int option = 0; //Variable for selecting an option.
 	// Variable initialization End
 
 
@@ -52,18 +53,13 @@ int main() {
 	}
 
 	switch (option) {
-	case 1: {
+	case 1:
 		break;
-		}
-	case 2: {
+	case 2:
+		break;
+	default:
 		break;
 	}
-	default: {
-		break;
-		}
-	}
-
-
 }
 
 int login(std::vector <BankAccount>& accountDB) {
@@ -361,3 +357,44 @@ void loadDatabase(std::vector <BankAccount>& accountDB) {
 	}
 	inFile.close();
 }
+
+void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
+	int option = 0;
+	while (true) {
+		std::cout << "===========================================\n";
+		std::cout << "       Welcome " << activeAccount.userName << "\n";
+		std::cout << "===========================================\n\n";
+
+		std::cout << "-----------------------------\n";
+		std::cout << "1. Check Balance\n";
+		std::cout << "2. Deposit\n";
+		std::cout << "3. Withdrawal\n";
+		std::cout << "4. Exit\n";
+		std::cout << "-----------------------------\n";
+		std::cout << "Enter your option: ";
+
+		while ((!std::cin >> option) || (option < 1 || option > 4)) { // Validating user input
+			if (std::cin.fail()) {
+				std::cin.clear();
+				std::cin.ignore(1000, '\n');
+				std::cout << "\nEnter a valid option (1-4): ";
+			}
+			else {
+				std::cout << "\nEnter a valid option (1-4): ";
+			}
+		}
+
+		switch (option) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void deposit(BankAccount & activeAccount, std::vector <BankAccount>&accountDB);
