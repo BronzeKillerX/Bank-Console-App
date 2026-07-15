@@ -16,6 +16,7 @@ void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB)
 void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void checkBalance(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void withdrawal(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
+void transferMoney(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void saveDatabase(const std::vector <BankAccount>& accountDB);
 void loadDatabase(std::vector <BankAccount>& accountDB);
 int login(std::vector <BankAccount>& accountDB);
@@ -361,26 +362,29 @@ void loadDatabase(std::vector <BankAccount>& accountDB) {
 void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
 	int option = 0;
 	while (true) {
+		std::system("cls");
 		std::cout << "===========================================\n";
-		std::cout << "       Welcome " << activeAccount.userName << "\n";
+		std::cout << "              Customer DashBoard           \n";
 		std::cout << "===========================================\n\n";
-
+		std::cout << "Welcome " << activeAccount.userName << "\n";
+		std::cout << "Account ID: " << activeAccount.ID << "\n";
 		std::cout << "-----------------------------\n";
 		std::cout << "1. Check Balance\n";
 		std::cout << "2. Deposit\n";
 		std::cout << "3. Withdrawal\n";
-		std::cout << "4. Exit\n";
+		std::cout << "4. Transfer / Send Money\n";
+		std::cout << "5. Logout\n";
 		std::cout << "-----------------------------\n";
 		std::cout << "Enter your option: ";
 
-		while ((!std::cin >> option) || (option < 1 || option > 4)) { // Validating user input
+		while ((!std::cin >> option) || (option < 1 || option > 5)) { // Validating user input
 			if (std::cin.fail()) {
 				std::cin.clear();
 				std::cin.ignore(1000, '\n');
-				std::cout << "\nEnter a valid option (1-4): ";
+				std::cout << "\nEnter a valid option (1-5): ";
 			}
 			else {
-				std::cout << "\nEnter a valid option (1-4): ";
+				std::cout << "\nEnter a valid option (1-5): ";
 			}
 		}
 
@@ -391,10 +395,37 @@ void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB)
 			break;
 		case 3:
 			break;
+		case 4: 
+			break;
 		default:
 			break;
 		}
 	}
 }
 
-void deposit(BankAccount & activeAccount, std::vector <BankAccount>&accountDB);
+void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
+	double amount;
+	while (true) {
+		std::cout << "-------------------Deposit-------------------\n\n";
+		std::cout << "Enter amount to Deposit ($1.00 to $50,000.00): ";
+
+		while (!(std::cin >> amount) || amount < 1.00 || amount > 50000.00) {
+			if (std::cin.fail()) {
+				std::cin.clear();
+				std::cin.ignore(1000, '\n');
+				std::cout << "Enter a valid amount!!! ($1.00 to $50000): ";
+			}
+			else {
+				std::cout << "Enter a valid amount!!! ($1.00 to $50000): ";
+			}
+		}
+		activeAccount.balance += amount;
+		saveDatabase(accountDB);
+		std::cout << "-------------------------------------\n";
+		std::cout << "Deposit Successful!!\n";
+		std::cout << "$" << amount << " has been deposited into your account.\n ";
+		std::cout << "Your New Balance: $" << activeAccount.balance << "\n";
+		std::cout << "--------------------------------------\n";
+	}
+}
+
