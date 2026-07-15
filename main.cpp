@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <iomanip>
+#include <sstream>
 #include <cctype>
 
 struct BankAccount {
@@ -12,13 +12,18 @@ struct BankAccount {
 	std::string DoB;
 	double balance = 0.0;
 };
-
+void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
+void checkBalance(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
+void withdrawal(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
+void saveDatabase(const std::vector <BankAccount>& accountDB);
+void loadDatabase(std::vector <BankAccount>& accountDB);
 int login(std::vector <BankAccount>& accountDB);
 void createAccount(std::vector <BankAccount>& accountDB);
 
 int main() {
 	// Variable initialization
 	std::vector <BankAccount> accountDB;
+	loadDatabase(accountDB);
 	int option; //Variable for selecting an option.
 	// Variable initialization End
 
@@ -300,4 +305,59 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 		}
 	}
 
+	tempAccount.balance = 0.0;
+	accountDB.push_back(tempAccount);
+	saveDatabase(accountDB);
+
+	std::cout << "\n==================================================\n";
+	std::cout << "  Account Created Successfully!\n";
+	std::cout << "  Welcome to the family, " << tempAccount.userName << "!\n";
+	std::cout << "==================================================\n";
+	std::system("pause");
+
+}
+
+void saveDatabase(const std::vector <BankAccount>& accountDB) {
+	std::ofstream outfile("database.txt");
+
+	if (!outfile) {
+		std::cout << "Error: Could not open database.txt for writing!\n";
+		return;
+	}
+
+	for (int i = 0; i < accountDB.size(); i++) {
+		outfile << accountDB[i].userName << " | "
+			<< accountDB[i].ID << " | "
+			<< accountDB[i].DoB << " | "
+			<< accountDB[i].pin << " | "
+			<< accountDB[i].balance << "\n";
+	}
+	outfile.close();
+}
+
+void loadDatabase(std::vector <BankAccount>& accountDB) {
+	std::ifstream inFile("database.txt");
+
+	if (!inFile) {
+		return;
+	}
+
+	accountDB.clear();
+	std::string line;
+
+	while (std::getline(inFile, line)) {
+		std::stringstream ss(line);
+		BankAccount tempAccount;
+		std::string balanceStr;
+
+		std::getline(ss, tempAccount.userName, '|');
+		std::getline(ss, tempAccount.ID, '|');
+		std::getline(ss, tempAccount.DoB, '|');
+		std::getline(ss, tempAccount.pin, '|');
+		std::getline(ss, balanceStr, '|');
+
+		tempAccount.balance = std::stod(balanceStr);
+		accountDB.push_back(tempAccount);
+	}
+	inFile.close();
 }
