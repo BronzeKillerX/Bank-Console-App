@@ -14,7 +14,7 @@ struct BankAccount {
 };
 void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
-void checkBalance(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
+void checkBalance(const BankAccount& activeAccount);
 void withdrawal(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void transferMoney(BankAccount& activeAccount, std::vector <BankAccount>& accountDB);
 void saveDatabase(const std::vector <BankAccount>& accountDB);
@@ -264,33 +264,26 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 	while (true) {
 		bool isValidFormat = true;
 		std::getline(std::cin >> std::ws, tempAccount.ID);
-
 		if (tempAccount.ID.length() != 15) {
 			isValidFormat = false;
 		}
 		else {
-			for (int i = 0; i < 15; i++) {
-				if (i == 0 && tempAccount.ID[i] != 'G') {
-					isValidFormat = false;
-					break;
-				}
-				else if (i == 1 && tempAccount.ID[i] != 'H'	) {
-					isValidFormat = false;
-					break;
-				}
-				else if (i == 2 && tempAccount.ID[i] != 'A') {
-					isValidFormat = false;
-					break;
-				}
-				else if (i == 3 || i == 8 || i == 13) {
-					if (tempAccount.ID[i] != '-') {
+			if (tempAccount.ID[0] != 'G' || tempAccount.ID[1] != 'H' || tempAccount.ID[2] != 'A') {
+				isValidFormat = false;
+			}
+			else if (tempAccount.ID[3] != '-' || tempAccount.ID[8] != '-' || tempAccount.ID[13] != '-') {
+				isValidFormat = false;
+			}
+			else {
+				for (int i = 0; i < 15; i++) {
+					if (i == 0 || i == 1 || i == 2 || i == 3 || i == 8 || i == 13) {
+						continue;
+					}
+
+					if (!isdigit(tempAccount.ID[i])) {
 						isValidFormat = false;
 						break;
 					}
-				}
-				else if (!isdigit(tempAccount.ID[i])) {
-					isValidFormat = false;
-					break;
 				}
 			}
 		}
@@ -404,7 +397,7 @@ void dashboard(BankAccount& activeAccount, std::vector <BankAccount>& accountDB)
 }
 
 void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
-	double amount;
+	double amount = 0.0;
 	while (true) {
 		std::cout << "-------------------Deposit-------------------\n\n";
 		std::cout << "Enter amount to Deposit ($1.00 to $50,000.00): ";
@@ -426,6 +419,88 @@ void deposit(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
 		std::cout << "$" << amount << " has been deposited into your account.\n ";
 		std::cout << "Your New Balance: $" << activeAccount.balance << "\n";
 		std::cout << "--------------------------------------\n";
+		std::cout << "Press the Enter button to continue...\n";
+		std::system("pause");
 	}
 }
 
+void checkBalance(const BankAccount& activeAccount) {
+	std::cout << "---------------Check Balance---------------\n\n";
+	std::cout << "Your current Balance is: $" << activeAccount.balance << "\n";
+	std::cout << "--------------------------------------------\n";
+	std::cout << "Press the Enter button to continue...";
+	std::system("pause");
+}
+
+void withdrawal(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
+	double amount = 0.0;
+	std::cout << "-------------------Withdrawal----------------------------\n\n";
+	std::cout << "Your Current Balance: $" << activeAccount.balance << "\n";
+	std::cout << "Enter amount to withdraw ($1.00 to $10,000.00): ";
+	while (!(std::cin >> amount) || amount < 1.00 || amount > 10000.00 || amount > activeAccount.balance) {
+		if (std::cin.fail()) {
+			std::cin.clear();
+			std::cin.ignore(1000, '\n');
+			std::cout << "Enter a valid amount!!! ($1.00 to $10,000.00): ";
+		}
+		else if (amount > activeAccount.balance) {
+			std::cout << "You do not have enough funds to complete this process!!!...\n";
+			std::cout << "Enter a valid amount $: ";
+		}
+		else {
+			std::cout << "Enter a valid amount ($1.00 to $10,000.00): ";
+		}
+	}
+	activeAccount.balance -= amount;
+	saveDatabase(accountDB);
+	std::cout << "-----------------------------------------------------\n";
+	std::cout << "Withdrawal Complete!!!... Thanks for Banking with Us\n";
+	std::cout << "Current Balance is: $" << activeAccount.balance << "\n";
+	std::cout << "-----------------------------------------------------\n";
+	std::cout << "Press the Enter key to continue....";
+	std::cin.ignore(1000, '\n');
+	std::system("pause");
+}
+
+void transferMoney(BankAccount& activeAccount, std::vector <BankAccount>& accountDB) {
+	double amount = 0.0;
+	BankAccount tempAccount;
+	std::cout << "--------------------Transfer Money--------------------\n\n";
+	std::cout << "Your Current Balance: $" << activeAccount.balance <<"\n";
+	std::cout << "Enter recipient ID (GHA-****-****-*):	";
+	std::cout << "Enter ID (GHA-****-****-*): ";
+	while (true) {
+		bool isValidFormat = true;
+		std::getline(std::cin >> std::ws, tempAccount.ID);
+		if (tempAccount.ID.length() != 15) {
+			isValidFormat = false;
+		}
+		else {
+			if (tempAccount.ID[0] != 'G' || tempAccount.ID[1] != 'H' || tempAccount.ID[2] != 'A') {
+				isValidFormat = false;
+			}
+			else if (tempAccount.ID[3] != '-' || tempAccount.ID[8] != '-' || tempAccount.ID[13] != '-') {
+				isValidFormat = false;
+			}
+			else {
+				for (int i = 0; i < 15; i++) {
+					if (i == 0 || i == 1 || i == 2 || i == 3 || i == 8 || i == 13) {
+						continue;
+					}
+
+					if (!isdigit(tempAccount.ID[i])) {
+						isValidFormat = false;
+						break;
+					}
+				}
+			}
+		}
+		if (isValidFormat) {
+			break;
+		}
+		else {
+			std::cout << "Invalid Format.... Try Again!! (GHA-****-****-*)\n\n";
+		}
+	}
+	
+}
