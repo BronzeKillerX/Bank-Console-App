@@ -176,36 +176,40 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 	}
 
 	std::cout << "Enter Date of Birth (DD/MM/YYYY): ";
-
+	
 	while (true) {
 		bool isValidFormat = true;
 		std::getline(std::cin >> std::ws, tempAccount.DoB);
-
 		if (tempAccount.DoB.length() != 10) {
+			isValidFormat = false;
+		}
+		else if (tempAccount.DoB[2] != '/' || tempAccount.DoB[5] != '/') {
 			isValidFormat = false;
 		}
 		else {
 			for (int i = 0; i < 10; i++) {
 				if (i == 2 || i == 5) {
-					if (tempAccount.DoB[i] != '/') {
-						isValidFormat = false;
-						break;
-					}
+					continue;
 				}
-				else {
-					if (!isdigit(tempAccount.DoB[i])) {
-						isValidFormat = false;
-						break;
-					}
+				if (!isdigit(tempAccount.DoB[i])) {
+					isValidFormat = false;
+					break;
 				}
 			}
 		}
-
+		if (isValidFormat) {
+			int day = std::stoi(tempAccount.DoB.substr(0, 2));
+			int month = std::stoi(tempAccount.DoB.substr(3, 2));
+			int year = std::stoi(tempAccount.DoB.substr(6, 4));
+			if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2026) {
+				isValidFormat = false;
+			}
+		}
 		if (isValidFormat) {
 			break;
 		}
 		else {
-			std::cout << "Invalid format... Enter Date of Birth as (DD/MM/YYYY): ";
+			std::cout << "Invalid Date!! Enter date as (DD/MM/YYYY): ";
 		}
 	}
 
@@ -286,11 +290,18 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 				}
 			}
 		}
-		if (isValidFormat) {
-			break;
-		}
-		else {
+		if (!isValidFormat) {
 			std::cout << "Invalid Format.... Try Again!! (GHA-****-****-*)\n\n";
+			continue;
+		}
+		bool isDuplicate = false;
+		for (const auto& acc : accountDB) {
+			if (acc.ID == tempAccount.ID) {
+				std::cout << "This ID is already registered! Please enter a unique ID: ";
+			}
+			else {
+				break;
+			}
 		}
 	}
 
@@ -466,40 +477,5 @@ void transferMoney(BankAccount& activeAccount, std::vector <BankAccount>& accoun
 	BankAccount tempAccount;
 	std::cout << "--------------------Transfer Money--------------------\n\n";
 	std::cout << "Your Current Balance: $" << activeAccount.balance <<"\n";
-	std::cout << "Enter recipient ID (GHA-****-****-*):	";
-	std::cout << "Enter ID (GHA-****-****-*): ";
-	while (true) {
-		bool isValidFormat = true;
-		std::getline(std::cin >> std::ws, tempAccount.ID);
-		if (tempAccount.ID.length() != 15) {
-			isValidFormat = false;
-		}
-		else {
-			if (tempAccount.ID[0] != 'G' || tempAccount.ID[1] != 'H' || tempAccount.ID[2] != 'A') {
-				isValidFormat = false;
-			}
-			else if (tempAccount.ID[3] != '-' || tempAccount.ID[8] != '-' || tempAccount.ID[13] != '-') {
-				isValidFormat = false;
-			}
-			else {
-				for (int i = 0; i < 15; i++) {
-					if (i == 0 || i == 1 || i == 2 || i == 3 || i == 8 || i == 13) {
-						continue;
-					}
-
-					if (!isdigit(tempAccount.ID[i])) {
-						isValidFormat = false;
-						break;
-					}
-				}
-			}
-		}
-		if (isValidFormat) {
-			break;
-		}
-		else {
-			std::cout << "Invalid Format.... Try Again!! (GHA-****-****-*)\n\n";
-		}
-	}
-	
+	std::cout << "Enter recipient ID (GHA-****-****-*):	";	
 }
