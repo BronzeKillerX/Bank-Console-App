@@ -207,7 +207,6 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 		else {
 			std::cout << "Invalid format... Enter Date of Birth as (DD/MM/YYYY): ";
 		}
-
 	}
 
 	while (true) {
