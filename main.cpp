@@ -1,3 +1,4 @@
+
 #include <iostream> // Input/Output Header file
 #include <vector> // To create Vectors (Dynamic Arrays)
 #include <string> // To use a sequence of characters and also functions tied to it
@@ -112,6 +113,19 @@ int main() {
 	int option = 0;
 	// Variable initialization End
 
+	//Injecting Admin credentials when database is empty (its always there after database file is created
+	if (accountDB.empty()) {
+		BankAccount adminAcc;
+		adminAcc.userName = "Admin";
+		adminAcc.ID = "GHA-0000-0000-0";
+		adminAcc.pin = "1234";
+		adminAcc.DoB = "01/01/2000";
+		adminAcc.balance = 0.0;
+		adminAcc.isAdmin = true;
+
+		accountDB.push_back(adminAcc);
+		saveDatabase(accountDB); // Saves it to database.txt immediately
+	}
 
 	// Login Menu
 	while (true) {
@@ -179,7 +193,6 @@ int login(std::vector <BankAccount>& accountDB) {
 	for (int attempt = 0; attempt < 3; attempt++) {
 		std::system("cls");
 		std::cout << "--------------------LOGIN--------------------\n\n";
-		std::cout << "=============================\n";
 		std::cout << "Enter User Name: ";
 
 		// User Input and Data Validation - Start (Username)
@@ -236,13 +249,13 @@ int login(std::vector <BankAccount>& accountDB) {
 		}
 
 		if (loginSuccessful) {
-			std::cout << "---------------Login Successful!!!!--------------------\n";
+			std::cout << "---------------Login Successful!!!!---------------\n";
 			std::cout << "Welcome, " << loggedInAccount.userName;
 			return matchedIndex;
 		}
 		else {
 			std::cout << "Incorrect Username / Password!!!... Try again!!!\n";
-			std::cout << "=============================\n";
+			std::cout << "==================================================\n";
 			if (attempt < 2) {
 				std::system("pause");
 			}
@@ -593,13 +606,13 @@ void adminDashboard(int adminIndex, std::vector <BankAccount>& accountDB) {
 //viewAccount(); function - Start
 void viewAccount(const std::vector <BankAccount>& accountDB) {
 	std::system("cls");
-	std::cout << "==================Registered Accounts===================\n";
+	std::cout << "=============================Registered Accounts=================================\n";
 	std::cout << std::left << std::setw(20) << "User Name"
 		<< std::setw(20) << "ID"
 		<< std::setw(20) << "Date of Birth"
 		<< std::setw(15) << "Balance"
 		<< std::setw(15) << "Status" << "\n";
-	std::cout << "=========================================================\n";
+	std::cout << "=================================================================================\n";
 	for (const auto& acc : accountDB) {
 		std::cout << std::left << std::setw(20) << acc.userName
 			<< std::setw(20) << acc.ID
@@ -607,7 +620,7 @@ void viewAccount(const std::vector <BankAccount>& accountDB) {
 			<< std::setw(15) << acc.balance
 			<< std::setw(15) << (acc.isAdmin ? "Admin" : "User") << "\n";
 	}
-	std::cout << "----------------------------------------------------------\n";
+	std::cout << "---------------------------------------------------------------------------------\n";
 	std::system("pause");
 	return;
 }
@@ -620,6 +633,8 @@ void deleteAccount(std::vector <BankAccount>& accountDB) {
 		std::system("cls");
 		std::cout << "-----------------Delete Account!!-----------------\n";
 		std::cout << "Enter User Account ID: ";
+
+		//User Input and Data validation - Start (ID)
 		bool isValidFormat = true;
 		std::getline(std::cin >> std::ws, targetID);
 		if (targetID.length() != 15) {
@@ -650,6 +665,9 @@ void deleteAccount(std::vector <BankAccount>& accountDB) {
 			std::system("pause");
 			continue;
 		}
+		//User Input and Data validation - End (ID)
+
+		//Check for account ID is admin, Account Exist and also Delete Confirmation - Start
 		bool isFound = false;
 		for (int i = 0; i < accountDB.size(); i++) {
 			if (targetID == accountDB[i].ID) {
@@ -682,14 +700,17 @@ void deleteAccount(std::vector <BankAccount>& accountDB) {
 		std::system("pause");
 		break;
 	}
+	//Check for account ID is admin, Account Exist and also Delete Confirmation - Start
 }
 //deleteAccount(); function - Start
 
+//deposit(); function - Start
 void deposit(int userIndex, std::vector <BankAccount>& accountDB) {
 	double amount = 0.0;
 		std::cout << "-------------------Deposit-------------------\n\n";
 		std::cout << "Enter amount to Deposit ($1.00 to $50,000.00): ";
 
+		//User Input and Data Validation - Start (amount)
 		while (!(std::cin >> amount) || amount < 1.00 || amount > 50000.00) {
 			if (std::cin.fail()) {
 				std::cin.clear();
@@ -700,6 +721,8 @@ void deposit(int userIndex, std::vector <BankAccount>& accountDB) {
 				std::cout << "Enter a valid amount!!! ($1.00 to $50000): ";
 			}
 		}
+		//User Input and Data Validation - End (amount)
+
 		std::cin.ignore(1000, '\n');
 		accountDB[userIndex].balance += amount;
 		saveDatabase(accountDB);
@@ -708,25 +731,29 @@ void deposit(int userIndex, std::vector <BankAccount>& accountDB) {
 		std::cout << "$" << amount << " has been deposited into your account.\n ";
 		std::cout << "Your New Balance: $" << accountDB[userIndex].balance << "\n";
 		std::cout << "--------------------------------------\n";
-		std::cout << "Press the Enter button to continue...\n";
 		std::system("pause");
 }
+//deposit(); function - End
 
+//checkBalance(); function - Start
 void checkBalance(const BankAccount& activeAccount) {
 	std::system("cls");
 	std::cout << "---------------Check Balance---------------\n\n";
 	std::cout << "Your current Balance is: $" << activeAccount.balance << "\n";
 	std::cout << "--------------------------------------------\n";
-	std::cout << "Press the Enter button to continue...";
 	std::system("pause");
 }
+//checkBalance(); function - End
 
+//withdrawal(); function - Start
 void withdrawal(int userIndex, std::vector <BankAccount>& accountDB) {
 	std::system("cls");
 	double amount = 0.0;
 	std::cout << "-------------------Withdrawal----------------------------\n\n";
 	std::cout << "Your Current Balance: $" << accountDB[userIndex].balance << "\n";
 	std::cout << "Enter amount to withdraw ($1.00 to $10,000.00): ";
+
+	//User Input and Data Validation - Start (amount)
 	while (!(std::cin >> amount) || amount < 1.00 || amount > 10000.00 || amount > accountDB[userIndex].balance) {
 		if (std::cin.fail()) {
 			std::cin.clear();
@@ -741,6 +768,8 @@ void withdrawal(int userIndex, std::vector <BankAccount>& accountDB) {
 			std::cout << "Enter a valid amount ($1.00 to $10,000.00): ";
 		}
 	}
+	//User Input and Data Validation - End (amount)
+
 	std::cin.ignore(1000, '\n');
 	accountDB[userIndex].balance -= amount;
 	saveDatabase(accountDB);
@@ -751,7 +780,9 @@ void withdrawal(int userIndex, std::vector <BankAccount>& accountDB) {
 	std::cout << "Press the Enter key to continue....";
 	std::system("pause");
 }
+//withdrawal(); function - End
 
+//transferMoney(); function - Start
 void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 	std::system("cls");
 	double amount = 0.0;
@@ -761,6 +792,8 @@ void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 	std::cout << "Your Current Balance: $" << accountDB[userIndex].balance << "\n";
 	while (true) {
 		std::cout << "Enter recipient ID (GHA-****-****-*):	";
+
+		//User Input and Data Validation - Start (ID)
 		while (true) {
 			bool isValidFormat = true;
 			std::getline(std::cin >> std::ws, recipientID);
@@ -795,7 +828,9 @@ void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 				break;
 			}
 		}
+		//User Input and Data Validation - Start (ID)
 
+		//Check to see if User is sending to self - Start
 		if (recipientID == accountDB[userIndex].ID) {
 			std::cout << "You cannot send money to yourself";
 			continue;
@@ -816,6 +851,9 @@ void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 			}
 		}
 	}
+	//Check to see if User is sending to self - End
+
+	//Amount to transfer validation - Start
 	std::cout << "Recipient Found! ( " << accountDB[recipientIndex].userName << " )\n";
 	std::cout << "Enter amount to transfer ($1.00 to $10,000.00): ";
 	while (!(std::cin >> amount) || amount < 1.00 || amount > 10000.00 || amount > accountDB[userIndex].balance) {
@@ -832,6 +870,8 @@ void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 			std::cout << "Enter a valid amount ($1.00 to $10,000.00): ";
 		}
 	}
+	//Amount to transfer validation - End
+
 	std::cin.ignore(1000, '\n');
 	accountDB[userIndex].balance -= amount;
 	accountDB[recipientIndex].balance += amount;
@@ -844,3 +884,4 @@ void transferMoney(int userIndex, std::vector <BankAccount>& accountDB) {
 	std::cout << "Press Enter to continue....";
 	std::system("pause");
 }
+//transferMoney(); function - End
