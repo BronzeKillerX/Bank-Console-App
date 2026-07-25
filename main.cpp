@@ -1,32 +1,110 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <cctype>
-#include <iomanip>
+#include <iostream> // Input/Output Header file
+#include <vector> // To create Vectors (Dynamic Arrays)
+#include <string> // To use a sequence of characters and also functions tied to it
+#include <fstream> // To read and write into files (external/txt)
+#include <sstream> //To read and write strings like they are streams (allow us to take data from the external file as it is)
+#include <cctype> //To classify or transform single characters
+#include <iomanip> // To manage input and output formating
 
+/*
+	Created a struct "BankAccount" to hold the data types and variables
+	tied to each attribute of the users account.
+*/
 struct BankAccount {
-	std::string userName;
-	std::string ID;
-	std::string pin;
-	std::string DoB;
-	double balance = 0.0;
-	bool isAdmin = false;
+	std::string userName; // string datatype to collect username
+	std::string ID; // string datatype to collect ID 
+	std::string pin; // string datatype to collect pin
+	std::string DoB; // string datatype to collect Date of Birth
+	double balance = 0.0; // double datatype to recieve balance
+	bool isAdmin = false; // bool datatype to differentiate between User and Admin
 };
+/*
+	adminDashboard(); function set to void, since there is not a return type
+	The function is created to display the menu the admin interacts with
+	after a successful login
+	Parameters: adminIndex(int), accountDB (vector)
+*/
 void adminDashboard(int adminIndex, std::vector <BankAccount>& accountDB);
+/*
+	viewAccoutn(); function set to void, since there is not a return type
+	The function is created to display a structured report of all
+	registered accounts in the database.
+	Parameters: accountDB(vector) - set to const since its a read-only function.
+*/
 void viewAccount(const std::vector <BankAccount>& accountDB);
+/*
+	deleteAccount(); fucntion set to void, since there is not a return type
+	The function is created to enable deletion of accounts based on a search by ID 
+	Admin account cannot be deleted
+	Parameters: accountDB(vector)
+*/
 void deleteAccount(std::vector <BankAccount>& accountDB);
+/*
+	dashboard(); function set to void, since there is not a return type
+	The function is created to display the menu the user interacts with
+	after a successfull login
+	Parameters: userIndex(int), accountDB(vector)
+*/
 void dashboard(int userIndex, std::vector <BankAccount>& accountDB);
+/*
+	deposit(); function set to void, since there is not a return type
+	The function is created to display a deposit menu as well as enable the
+	user to deposit cash into their account.
+	Parameters: userIndex(int), accountDB(vector)
+*/
 void deposit(int userIndex, std::vector <BankAccount>& accountDB);
+/*
+	checkbalance(); function set to void, since there is not a return type
+	The function is created to display a check balance menu, enabling the 
+	user to check their current balance.
+	Parameters: activeAccount(vector) - set to const since its a read-only function
+*/
 void checkBalance(const BankAccount& activeAccount);
+/*
+	withdrawal(); function set to void, since there is not a return type
+	The function created to display a withdrawal menu, enabling the user
+	to withdraw money from their accounts.
+	Parameters: userIndex(int), accountDB(vector)
+*/
 void withdrawal(int userIndex, std::vector <BankAccount>& accountDB);
+/*
+	transferMoney(); function set to void, since there is not a return type
+	The function created to display a transfer money menu, enabling the user
+	to transfer money via search by ID, user cannot send money to their self
+	Parameters: userIndex(int), accountDB(vector)
+*/
 void transferMoney(int userIndex, std::vector <BankAccount>& accountDB);
+/*
+	saveDatabase(); function set to void, since there is not a return type
+	The fucntion created to save user data into an external txt file that 
+	serves as a database (utilizes the fstream header)
+	Parameters: accountDB(vector) - set to const since it's a read-only function
+*/
 void saveDatabase(const std::vector <BankAccount>& accountDB);
+/*
+	loadDatabase(); function set to void, since there is not a return type
+	The function created to load user data from an external txt file that serves
+	as a database (utilizes the fstream and sstream headers)
+	Parameters: accountDB(vector)
+*/
 void loadDatabase(std::vector <BankAccount>& accountDB);
-int login(std::vector <BankAccount>& accountDB);
-void createAccount(std::vector <BankAccount>& accountDB);
+/*
+	login(); function set to int, since theres is an int return type (either -1 or userIndex/adminIndex)
+	The function created to display a login menu which takes user name and pin code
+	If no registered account is available on the database, User cannot login until account creation
+	(with the exception of admin since its account is automatically registed)
+	Parameters: accountDB(vector)
 
+*/
+int login(std::vector <BankAccount>& accountDB);
+/*
+	createAccount(); funtion set to void, since there is not return type
+	The fucntion create to display a create account menu which takes all required information
+	to enable user to create an account
+	Parameters: accountDB(vector)
+*/
+void createAccount(std::vector <BankAccount>& accountDB);
+//main(); function - Start
 int main() {
 	// Variable initialization
 	std::vector <BankAccount> accountDB;
@@ -47,14 +125,17 @@ int main() {
 		std::cout << "2. Create Account\n";
 		std::cout << "3. Exit\n";
 		std::cout << "------------------------\n";
-		std::cout << "Enter an option (1-3): "; //Prompt to ask for user input
+		std::cout << "Enter an option (1-3): ";
 
-		while (!(std::cin >> option) || (option < 1 || option > 3)) { // Validating user input
+		//User Input and Data validation - Start
+		while (!(std::cin >> option) || (option < 1 || option > 3)) { 
 				std::cin.clear();
 				std::cin.ignore(1000, '\n');
 				std::cout << "\nEnter a valid option (1-3): ";
 		}
+		//User Input and Data validation - End
 
+		//Switch case to check for the condition - Start
 		switch (option) {
 		case 1: {
 			int userIndex = login(accountDB);
@@ -74,17 +155,23 @@ int main() {
 		case 3:
 			return 0;
 		}
+		// Switch case to check for condition - End
 	}
 }
+//main(); function - End
 
+//login(); function - Start
 int login(std::vector <BankAccount>& accountDB) {
 	std::system("cls");
+	//Checking if database is empty - Start
 	if (accountDB.empty()) {
 		std::cout << "No Account Available !!!!!....\n";
 		std::cout << "Returning to Main Menu......\n";
 		std::system("pause");
 		return -1;
 	}
+	//Checking if database is empty - End
+	
 	//Variable initialization
 	BankAccount tempAccount;
 	int matchedIndex = -1;
@@ -94,6 +181,8 @@ int login(std::vector <BankAccount>& accountDB) {
 		std::cout << "--------------------LOGIN--------------------\n\n";
 		std::cout << "=============================\n";
 		std::cout << "Enter User Name: ";
+
+		// User Input and Data Validation - Start (Username)
 		while (true) {
 			bool IsValidString = true;
 			std::getline(std::cin >> std::ws, tempAccount.userName);
@@ -111,7 +200,9 @@ int login(std::vector <BankAccount>& accountDB) {
 				std::cout << "Enter a valid user name!!!: ";
 			}
 		}
+		//User Input and Data Validation - End (Username)
 
+		// User Input and Data Validation - Start (Pin)
 		std::cout << "Enter 4 digit Pin Code: ";
 		while (true) {
 			bool isValidDigit = true;
@@ -130,7 +221,9 @@ int login(std::vector <BankAccount>& accountDB) {
 				std::cout << "Enter a valid Pin: ";
 			}
 		}
+		//User Input and Data Validation - End (Pin)
 
+		//Check to see if credentials entered is valid - Start
 		bool loginSuccessful = false;
 		BankAccount loggedInAccount;
 		for (int i = 0; i < accountDB.size(); i++) {
@@ -148,13 +241,16 @@ int login(std::vector <BankAccount>& accountDB) {
 			return matchedIndex;
 		}
 		else {
-			std::cout << "Incorrect Username / Password!!!... Try again!!!";
+			std::cout << "Incorrect Username / Password!!!... Try again!!!\n";
+			std::cout << "=============================\n";
 			if (attempt < 2) {
 				std::system("pause");
 			}
 		}
-		std::cout << "=============================\n";
 	}
+	//Check to see if credentials entered is valid - Start
+	
+	//If attempts exceed 3 - Start
 	std::system("cls");
 	std::cout << "===================================\n";
 	std::cout << "Too many attempts.... Login Failed!!!\n";
@@ -162,16 +258,20 @@ int login(std::vector <BankAccount>& accountDB) {
 	std::cout << "===================================\n";
 	std::system("pause");
 	return -1;
+	//If attempts exceed 3 - End
 }
+//login(); function - End
 
+//createAccount(); function - Start
 void createAccount(std::vector <BankAccount>& accountDB) {
 	//Variable initialization
 	BankAccount tempAccount;
 	//Variable initialization end
-
+	std::system("cls");
 	std::cout << "--------------Create An Account----------------\n\n";
 	std::cout << "Enter User Name: ";
-	
+
+	// User Input and Data Validation - Start (Username)
 	while (true) {
 		bool IsValidString = true;
 		std::getline(std::cin >> std::ws, tempAccount.userName);
@@ -189,7 +289,9 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 			std::cout << "Enter a valid user name!!!: ";
 		}
 	}
+	// User Input and Data Validation - End (Username)
 
+	// User Input and Data Validation - Start (DoB)
 	std::cout << "Enter Date of Birth (DD/MM/YYYY): ";
 	
 	while (true) {
@@ -227,7 +329,9 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 			std::cout << "Invalid Date!! Enter date as (DD/MM/YYYY): ";
 		}
 	}
+	// User Input and Data Validation - End (DoB)
 
+	// User Input and Data Validation - Start (Pin)
 	while (true) {
 		std::cout << "Enter Pin: ";
 
@@ -276,9 +380,11 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 			std::cout << "The Pin you entered does not match... Try Again\n\n";
 		}
 	}
+	// User Input and Data Validation - End (Pin)
 
 	std::cout << "Enter ID (GHA-****-****-*): ";
 
+	// User Input and Data Validation - Start (ID)
 	while (true) {
 		bool isValidFormat = true;
 		std::getline(std::cin >> std::ws, tempAccount.ID);
@@ -310,6 +416,7 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 			std::system("pause");
 			continue;
 		}
+		//Checking if user has entered an existing ID - Start
 		bool isDuplicate = false;
 		for (const auto& acc : accountDB) {
 			if (acc.ID == tempAccount.ID) {
@@ -324,7 +431,9 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 		else {
 			break;
 		}
+		//Checking if user has entered an existing ID - End
 	}
+	// User Input and Data Validation - End (ID)
 
 	tempAccount.balance = 0.0;
 	accountDB.push_back(tempAccount);
@@ -337,9 +446,11 @@ void createAccount(std::vector <BankAccount>& accountDB) {
 	std::system("pause");
 
 }
+//createAccount(); function - End
 
+//saveDatabase(); fucntion - Start
 void saveDatabase(const std::vector <BankAccount>& accountDB) {
-	std::ofstream outfile("database.txt");
+	std::ofstream outfile("database.txt"); // Name of file;
 
 	if (!outfile) {
 		std::cout << "Error: Could not open database.txt for writing!\n";
@@ -356,7 +467,9 @@ void saveDatabase(const std::vector <BankAccount>& accountDB) {
 	} 
 	outfile.close();
 }
+//saveDatabase(); fucntion - End
 
+//loadDatabase(); function - Start
 void loadDatabase(std::vector <BankAccount>& accountDB) {
 	std::ifstream inFile("database.txt");
 
@@ -385,7 +498,9 @@ void loadDatabase(std::vector <BankAccount>& accountDB) {
 	}
 	inFile.close();
 }
+//loadDatabase(); function - End
 
+//dashboard(); function - Start
 void dashboard(int userIndex, std::vector <BankAccount>& accountDB) {
 	int option = 0;
 	while (true) {
@@ -404,12 +519,15 @@ void dashboard(int userIndex, std::vector <BankAccount>& accountDB) {
 		std::cout << "-----------------------------\n";
 		std::cout << "Enter your option: ";
 
-		while (!(std::cin >> option) || (option < 1 || option > 5)) { // Validating user input
+		// User Input and Data Validation - Start (Option)
+		while (!(std::cin >> option) || (option < 1 || option > 5)) { 
 			std::cin.clear();
 			std::cin.ignore(1000, '\n');
 			std::cout << "\nEnter a valid option (1-5): ";
 		}
+		// User Input and Data Validation - Start (Option)
 
+		//Switch case to check for the condition - Start
 		switch (option) {
 		case 1:
 			checkBalance(accountDB[userIndex]);
@@ -426,9 +544,12 @@ void dashboard(int userIndex, std::vector <BankAccount>& accountDB) {
 		case 5:
 			return;
 		}
+		//Switch case to check for the condition - End
 	}
 }
+//dashboard(); function - End
 
+//adminDashboard(); function - Start
 void adminDashboard(int adminIndex, std::vector <BankAccount>& accountDB) {
 	int option = 0;
 	while (true) {
@@ -444,12 +565,16 @@ void adminDashboard(int adminIndex, std::vector <BankAccount>& accountDB) {
 		std::cout << "3. Logout\n";
 		std::cout << "------------------------------------------\n";
 		std::cout << "Enter your option: ";
-		
-		while (!(std::cin >> option) || (option < 1 || option > 3)) { // Validating user input
+
+		//User Input and Validation - Start (Option)
+		while (!(std::cin >> option) || (option < 1 || option > 3)) {
 			std::cin.clear();
 			std::cin.ignore(1000, '\n');
 			std::cout << "\nEnter a valid option (1-3): ";
 		}
+		//User Input and Validation - End (Option)
+
+		//Switch case to check for the condition - Start
 		switch (option) {
 			case 1:
 				viewAccount(accountDB);
@@ -460,9 +585,12 @@ void adminDashboard(int adminIndex, std::vector <BankAccount>& accountDB) {
 			case 3:
 				return;
 		}
+		//Switch case to check for the condition - End
 	}
 }
+//adminDashboard(); function - Start
 
+//viewAccount(); function - Start
 void viewAccount(const std::vector <BankAccount>& accountDB) {
 	std::system("cls");
 	std::cout << "==================Registered Accounts===================\n";
@@ -483,7 +611,9 @@ void viewAccount(const std::vector <BankAccount>& accountDB) {
 	std::system("pause");
 	return;
 }
+//viewAccount(); function - End
 
+//deleteAccount(); function - Start
 void deleteAccount(std::vector <BankAccount>& accountDB) {
 	std::string targetID;
 	while (true) {
@@ -553,6 +683,7 @@ void deleteAccount(std::vector <BankAccount>& accountDB) {
 		break;
 	}
 }
+//deleteAccount(); function - Start
 
 void deposit(int userIndex, std::vector <BankAccount>& accountDB) {
 	double amount = 0.0;
