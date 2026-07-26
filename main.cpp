@@ -1,3 +1,13 @@
+/*
+	Computer Science Group A
+	Group 6 (Member List)
+	1. Abdul Hakeem - 2526400627
+	2. Timothy Nii Odartey Holm - 2526402014
+	3. Bilal Mohammed Ghani - 2526402447
+	4. James Lorlomyo Brown - 2526403236
+	5. Nelly Jasmine Amenu - 2526401985
+	6. Kusi Patrick - 2526402303
+*/
 
 #include <iostream> // Input/Output Header file
 #include <vector> // To create Vectors (Dynamic Arrays)
